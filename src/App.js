@@ -14,6 +14,11 @@ const App = () => {
       window.mathVirtualKeyboard.hide()
     );
 
+    mathFieldRef.current.macros = {
+      ...mathFieldRef.current.macros,
+      speed: "\\mathrm{speed}",
+    };
+
     window.mathVirtualKeyboard.layouts = [
       {
         label: "Var",
