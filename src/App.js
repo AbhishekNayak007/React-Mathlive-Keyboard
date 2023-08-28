@@ -17,6 +17,8 @@ const App = () => {
     mathFieldRef.current.macros = {
       ...mathFieldRef.current.macros,
       speed: "\\mathrm{speed}",
+      abc: "\\mathrm{abc}",
+      j1: "\\mathrm{j1}",
     };
 
     window.mathVirtualKeyboard.layouts = [
@@ -24,7 +26,9 @@ const App = () => {
         label: "Var",
         rows: [
           [
-            "\\mathrm{speed}",
+            { latex: "j1", insert: "\\j1" },
+            { latex: "speed", insert: "\\speed" },
+            { latex: "abc", insert: "\\abc" },
             { label: "[return]", width: 1 },
             { label: "[backspace]", width: 1 },
           ],
