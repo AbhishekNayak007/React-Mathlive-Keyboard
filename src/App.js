@@ -1,9 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import "mathlive";
+import { ComputeEngine } from "@cortex-js/compute-engine";
 
 const App = () => {
   const [latex, setLatex] = useState(null);
   const mathFieldRef = useRef();
+  const [evaluatedValue, setEvaluatedValue] = useState(0);
+
+  const computingEngine = new ComputeEngine();
+  computingEngine.set({ speed: 10 });
+
+  useEffect(() => {
+    let exp = computingEngine.parse(latex);
+    setEvaluatedValue(exp?.N().valueOf());
+  }, [latex]);
 
   useEffect(() => {
     mathFieldRef.current.mathVirtualKeyboardPolicy = "manual";
@@ -14,21 +24,35 @@ const App = () => {
       window.mathVirtualKeyboard.hide()
     );
 
+    const nums = ["one", "two", "three", "four", "five", "six", "seven"];
+    const axesCount = 7;
+    let macrosTempObj = {};
+
+    for (let i = 0; i < axesCount; i++) {
+      macrosTempObj = Object.assign(macrosTempObj, {
+        [`temp${nums[i]}`]: `\\mathrm{temp${i + 1}}`,
+      });
+    }
+
     mathFieldRef.current.macros = {
       ...mathFieldRef.current.macros,
       speed: "\\mathrm{speed}",
-      abc: "\\mathrm{abc}",
-      j1: "\\mathrm{j1}",
+      ...macrosTempObj,
     };
+
+    let tempKeys = [];
+    for (let i = 0; i < axesCount; i++) {
+      tempKeys.push({ latex: `temp${i + 1}`, insert: `\\temp${nums[i]}}` });
+    }
 
     window.mathVirtualKeyboard.layouts = [
       {
         label: "Var",
         rows: [
           [
-            { latex: "j1", insert: "\\j1" },
+            { latex: "temp#@", insert: "\\tempone", variants: tempKeys },
             { latex: "speed", insert: "\\speed" },
-            { latex: "abc", insert: "\\abc" },
+            { latex: "speed", insert: "\\mathrm{speed}" },
             { label: "[return]", width: 1 },
             { label: "[backspace]", width: 1 },
           ],
@@ -51,6 +75,7 @@ const App = () => {
         {latex}
       </math-field>
       <p>Latex Expression: {latex}</p>
+      <p>Evaluated Value : {evaluatedValue}</p>
     </div>
   );
 };
